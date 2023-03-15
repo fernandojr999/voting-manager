@@ -1,1 +1,3 @@
-.class
+*.class
+*.idea
+voting-manager.iml
