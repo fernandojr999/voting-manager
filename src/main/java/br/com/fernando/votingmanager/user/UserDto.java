@@ -19,6 +19,7 @@ public class UserDto {
 
     public static UserDto toUserDto(User user){
         return UserDto.builder()
+                .id(user.id)
                 .name(user.name)
                 .build();
     }

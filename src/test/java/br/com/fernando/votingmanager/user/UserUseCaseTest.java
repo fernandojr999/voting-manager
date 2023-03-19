@@ -21,7 +21,7 @@ public class UserUseCaseTest extends BaseTest {
     @Test
     public void create_user_should_work_and_should_to_return_all_users(){
         UserDto userDto = UserDto.builder().name("FERNANDO").build();
-        userUseCase.create(userDto);
+        userDto = userUseCase.create(userDto);
         assertNotNull(userDto.id);
 
         List<User> users = userUseCase.getAll();

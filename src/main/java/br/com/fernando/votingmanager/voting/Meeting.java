@@ -1,14 +1,14 @@
 package br.com.fernando.votingmanager.voting;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import br.com.fernando.votingmanager.voting.vote.Vote;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -23,4 +23,10 @@ public class Meeting{
     UUID id;
 
     String description;
+
+    LocalDateTime startSession;
+    LocalDateTime endSession;
+
+    @OneToMany(mappedBy = "meeting")
+    private List<Vote> votes;
 }
