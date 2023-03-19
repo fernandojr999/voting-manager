@@ -1,7 +1,11 @@
 package br.com.fernando.votingmanager.voting;
 
+import br.com.fernando.votingmanager.VoteType;
 import br.com.fernando.votingmanager.VotingManagerApplication;
 import br.com.fernando.votingmanager.shared.BaseTest;
+import br.com.fernando.votingmanager.user.UserDto;
+import br.com.fernando.votingmanager.user.UserUseCase;
+import br.com.fernando.votingmanager.voting.vote.VoteDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,6 +17,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = VotingManagerApplication.class)
 public class MeetingUseCaseTest extends BaseTest{
+
+    @Autowired
+    UserUseCase userUseCase;
 
     @Autowired
     MeetingUseCase meetingUseCase;
@@ -57,5 +64,31 @@ public class MeetingUseCaseTest extends BaseTest{
         assertEquals(meetingResultDto.quantityNO, 0);
         assertEquals(meetingResultDto.quantityYES, 0);
         assertEquals(meetingResultDto.message, "Essa sessão ainda não foi aberta");
+    }
+
+    @Test
+    public void registerVote_should_to_valid_session(){
+        UserDto user = userUseCase.create(UserDto.builder().name("Teste").build());
+        Meeting meeting = meetingUseCase.create(MeetingDto.builder().description("REUNIAO TESTE 1").build());
+        UUID meetingId = meeting.id;
+
+        assertThrows(RuntimeException.class, () -> {
+            meetingUseCase.registerVote(VoteDto.builder().userId(user.getId()).meetingId(meetingId).voteType(VoteType.YES).build());
+        });
+    }
+
+    @Test
+    public void registerVote_shouldnt_allow_duplicate_vote(){
+        UserDto user = userUseCase.create(UserDto.builder().name("Teste").build());
+        Meeting meeting = meetingUseCase.create(MeetingDto.builder().description("REUNIAO TESTE 1").build());
+        UUID meetingId = meeting.id;
+
+        meetingUseCase.startSession(MeetingStartSessionDto.builder().meetingId(meetingId).build());
+
+        meetingUseCase.registerVote(VoteDto.builder().userId(user.getId()).meetingId(meetingId).voteType(VoteType.YES).build());
+
+        assertThrows(RuntimeException.class, () -> {
+            meetingUseCase.registerVote(VoteDto.builder().userId(user.getId()).meetingId(meetingId).voteType(VoteType.YES).build());
+        });
     }
 }
