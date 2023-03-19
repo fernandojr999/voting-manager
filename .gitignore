@@ -4,3 +4,4 @@ voting-manager.iml
 target/classes/classpath.index
 target/test-classes/application.yml
 target/test-classes/classpath.index
+target/classes/application.yml
