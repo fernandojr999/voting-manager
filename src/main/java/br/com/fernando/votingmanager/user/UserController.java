@@ -18,7 +18,7 @@ public class UserController {
     }
 
     @PostMapping
-    public void save(@RequestBody UserDto userDto){
-        userUseCase.create(userDto);
+    public UserDto save(@RequestBody UserDto userDto){
+       return userUseCase.create(userDto);
     }
 }

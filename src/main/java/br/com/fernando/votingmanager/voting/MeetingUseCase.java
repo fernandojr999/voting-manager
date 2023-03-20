@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -24,12 +25,29 @@ public class MeetingUseCase {
     VoteUseCase voteUseCase;
     private final UserRepository userRepository;
 
-    public Meeting create(MeetingDto meetingDto){
-        return meetingRepository.save(MeetingDto.toMeeting(meetingDto));
+    public MeetingDto create(MeetingDto meetingDto){
+        Meeting meeting =meetingRepository.save(MeetingDto.toMeeting(meetingDto));
+
+        return MeetingDto.builder()
+                .description(meeting.description)
+                .id(meeting.id)
+                .build();
     }
 
-    public List<Meeting> getAll(){
-        return meetingRepository.findAll();
+    public List<MeetingDto> getAll(){
+        List<Meeting> meetings = meetingRepository.findAll();
+
+        List<MeetingDto> meetingDtos = new ArrayList<>();
+        meetings.forEach(meeting -> {
+            meetingDtos.add(MeetingDto.builder()
+                            .id(meeting.id)
+                            .description(meeting.description)
+                            .endSession(meeting.endSession)
+                            .startSession(meeting.startSession)
+                    .build());
+        });
+
+        return meetingDtos;
     }
 
     public Meeting startSession(MeetingStartSessionDto meetingStartSessionDto){
@@ -58,8 +76,10 @@ public class MeetingUseCase {
     public MeetingResultDto getResult(UUID meetingId){
         Meeting meeting = meetingRepository.findByIdWithVotes(meetingId).orElseThrow(() -> new NotFoundException("Pauta não encontrada"));
 
-        List<Vote> votesYES = meeting.getVotes().stream().filter(vote -> vote.equals(VoteType.YES)).toList();
-        List<Vote> votesNO  = meeting.getVotes().stream().filter(vote -> vote.equals(VoteType.NO)).toList();
+        List<Vote> votesYES = meeting.getVotes().stream().filter(vote -> vote.getVoteType().equals(VoteType.YES)).toList();
+
+
+        List<Vote> votesNO  = meeting.getVotes().stream().filter(vote -> vote.getVoteType().equals(VoteType.NO)).toList();
 
         String message = "";
 

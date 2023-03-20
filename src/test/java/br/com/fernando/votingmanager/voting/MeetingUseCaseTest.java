@@ -26,20 +26,20 @@ public class MeetingUseCaseTest extends BaseTest{
 
     @Test
     public void create_Meeting_should_work(){
-        Meeting meeting = meetingUseCase.create(MeetingDto.builder().description("REUNIAO TESTE 1").build());
+        MeetingDto meeting = meetingUseCase.create(MeetingDto.builder().description("REUNIAO TESTE 1").build());
         assertNotNull(meeting.id);
 
-        List<Meeting> meetings = meetingUseCase.getAll();
+        List<MeetingDto> meetings = meetingUseCase.getAll();
         assertEquals(meetings.size(), 1);
         assertEquals(meetings.get(0).description, "REUNIAO TESTE 1");
     }
 
     @Test
     public void start_session_shold_to_valid_session(){
-        Meeting meeting = meetingUseCase.create(MeetingDto.builder().description("REUNIAO TESTE 1").build());
-        UUID meetingId = meeting.id;
+        MeetingDto meetingDto = meetingUseCase.create(MeetingDto.builder().description("REUNIAO TESTE 1").build());
+        UUID meetingId = meetingDto.id;
 
-        meeting = meetingUseCase.startSession(MeetingStartSessionDto.builder().meetingId(meetingId).build());
+        Meeting meeting = meetingUseCase.startSession(MeetingStartSessionDto.builder().meetingId(meetingId).build());
         assertEquals(meeting.endSession, meeting.getStartSession().plusMinutes(1));
 
         assertThrows(RuntimeException.class, () -> {
@@ -56,7 +56,7 @@ public class MeetingUseCaseTest extends BaseTest{
 
     @Test
     public void get_result_should_to_return_votes(){
-        Meeting meeting = meetingUseCase.create(MeetingDto.builder().description("REUNIAO TESTE 1").build());
+        MeetingDto meeting = meetingUseCase.create(MeetingDto.builder().description("REUNIAO TESTE 1").build());
         UUID meetingId = meeting.id;
 
         MeetingResultDto meetingResultDto = meetingUseCase.getResult(meetingId);
@@ -69,7 +69,7 @@ public class MeetingUseCaseTest extends BaseTest{
     @Test
     public void registerVote_should_to_valid_session(){
         UserDto user = userUseCase.create(UserDto.builder().name("Teste").build());
-        Meeting meeting = meetingUseCase.create(MeetingDto.builder().description("REUNIAO TESTE 1").build());
+        MeetingDto meeting = meetingUseCase.create(MeetingDto.builder().description("REUNIAO TESTE 1").build());
         UUID meetingId = meeting.id;
 
         assertThrows(RuntimeException.class, () -> {
@@ -80,7 +80,7 @@ public class MeetingUseCaseTest extends BaseTest{
     @Test
     public void registerVote_shouldnt_allow_duplicate_vote(){
         UserDto user = userUseCase.create(UserDto.builder().name("Teste").build());
-        Meeting meeting = meetingUseCase.create(MeetingDto.builder().description("REUNIAO TESTE 1").build());
+        MeetingDto meeting = meetingUseCase.create(MeetingDto.builder().description("REUNIAO TESTE 1").build());
         UUID meetingId = meeting.id;
 
         meetingUseCase.startSession(MeetingStartSessionDto.builder().meetingId(meetingId).build());

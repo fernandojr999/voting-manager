@@ -10,9 +10,8 @@ import java.util.UUID;
 public interface MeetingRepository extends JpaRepository<Meeting, UUID> {
 
     @Query("""
-            SELECT m, v 
+            SELECT m
             FROM Meeting m
-            LEFT JOIN FETCH Vote v
             WHERE m.id = :meetingId
             """)
     @EntityGraph(attributePaths = {"votes"})
